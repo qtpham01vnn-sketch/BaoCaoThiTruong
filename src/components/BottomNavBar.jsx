@@ -1,0 +1,41 @@
+import { useNavigate, useLocation } from 'react-router-dom';
+
+const navItems = [
+  { path: '/', icon: 'home', label: 'Home' },
+  { path: '/create', icon: 'add_circle', label: 'Tạo mới' },
+  { path: '/settings', icon: 'settings', label: 'Cài đặt' },
+];
+
+export default function BottomNavBar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  return (
+    <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-2 bg-surface border-t border-outline-variant">
+      {navItems.map((item) => {
+        const isActive = location.pathname === item.path;
+        return (
+          <button
+            key={item.path}
+            onClick={() => navigate(item.path)}
+            className={`flex flex-col items-center justify-center px-4 py-1 rounded-full transition-all active:scale-90 ${
+              isActive
+                ? 'bg-secondary-container text-on-secondary-container'
+                : 'text-on-surface-variant hover:bg-surface-container-low'
+            }`}
+          >
+            <span
+              className="material-symbols-outlined text-[22px]"
+              style={isActive ? { fontVariationSettings: "'FILL' 1" } : {}}
+            >
+              {item.icon}
+            </span>
+            <span className="text-[11px] mt-0.5 font-medium" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              {item.label}
+            </span>
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
