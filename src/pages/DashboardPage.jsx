@@ -48,15 +48,17 @@ export default function DashboardPage() {
         {/* Search and Filter */}
         <section className="mb-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-semibold text-on-surface">Tổng Quan Thị Trường</h2>
-              <p className="text-sm text-on-surface-variant">Xem và quản lý các báo cáo thị trường.</p>
+            <div className="group">
+              <h2 className="text-3xl font-black bg-gradient-to-r from-teal-500 via-indigo-500 to-purple-600 bg-clip-text text-transparent drop-shadow-sm group-hover:scale-[1.02] transition-transform duration-300 transform origin-left">
+                Tổng Quan Thị Trường
+              </h2>
+              <p className="text-sm text-on-surface-variant mt-1">Xem và quản lý các báo cáo thị trường.</p>
             </div>
             <div className="flex items-center gap-2">
-              <div className="relative flex-grow md:w-64">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+              <div className="relative flex-grow md:w-64 group">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm group-hover:text-indigo-500 transition-colors">search</span>
                 <input
-                  className="w-full pl-10 pr-4 py-2 bg-surface border border-outline-variant rounded-lg focus:border-primary focus:ring-0 text-sm outline-none"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-indigo-100 rounded-xl shadow-sm hover:shadow-md focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 text-sm outline-none transition-all duration-300"
                   placeholder="Tìm tuyến, đại lý..."
                   type="text"
                   value={search}
@@ -111,8 +113,9 @@ export default function DashboardPage() {
               <div
                 key={report.id}
                 onClick={() => navigate(`/report/${report.id}`)}
-                className="bg-white border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] hover:-translate-y-2 transition-all duration-300 group cursor-pointer active:scale-[0.98]"
+                className="bg-white border border-indigo-100 rounded-xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group cursor-pointer active:scale-[0.98] relative"
               >
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-teal-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
                 <div className="h-28 bg-surface-container relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-tertiary-fixed/20 flex items-center justify-center">
                     <span className="material-symbols-outlined text-primary/20 text-6xl">description</span>

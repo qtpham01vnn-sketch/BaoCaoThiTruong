@@ -13,6 +13,7 @@ const ROUTES = [
   'Dĩ An - Bình Dương',
   'Cần Thơ - Vĩnh Long',
   'Khu vực Đồng Nai',
+  'Khác',
 ];
 
 const DEALERS = [
@@ -21,6 +22,7 @@ const DEALERS = [
   'Tạp hóa Cô Năm - 78 Nguyễn Huệ',
   'Đại lý Minh Quân - 123 Đường 30/4',
   'Đại lý Thành Đạt - 56 Trần Hưng Đạo',
+  'Khác',
 ];
 
 function getTodayString() {
@@ -163,6 +165,9 @@ export default function CreateReportPage() {
   const [isSaved, setIsSaved] = useState(false);
   const [images, setImages] = useState([]);
   
+  const [customRoute, setCustomRoute] = useState('');
+  const [customDealer, setCustomDealer] = useState('');
+  
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
 
@@ -175,8 +180,11 @@ export default function CreateReportPage() {
     setIsProcessing(true);
     setAiReport('Hệ thống AI đang xử lý và chuẩn hóa dữ liệu...');
 
+    const finalRoute = route === 'Khác' && customRoute.trim() ? customRoute.trim() : route;
+    const finalDealer = dealer === 'Khác' && customDealer.trim() ? customDealer.trim() : dealer;
+
     setTimeout(() => {
-      const report = generateAIReport({ agentName, vehicleNumber, route, dealer, rawNotes });
+      const report = generateAIReport({ agentName, vehicleNumber, route: finalRoute, dealer: finalDealer, rawNotes });
       setAiReport(report);
       setIsProcessing(false);
     }, 1500);
@@ -188,12 +196,15 @@ export default function CreateReportPage() {
       return;
     }
 
+    const finalRoute = route === 'Khác' && customRoute.trim() ? customRoute.trim() : route;
+    const finalDealer = dealer === 'Khác' && customDealer.trim() ? customDealer.trim() : dealer;
+
     const report = {
       agentName: agentName.trim(),
       vehicleNumber: vehicleNumber.trim(),
-      route,
-      dealer,
-      title: `BC Thị trường ${route.split(' - ')[0]} - ${getTodayString()}`,
+      route: finalRoute,
+      dealer: finalDealer,
+      title: `BC Thị trường ${finalRoute.split(' - ')[0]} - ${getTodayString()}`,
       rawNotes,
       aiReport: aiReport || rawNotes,
       images: images,
@@ -287,6 +298,17 @@ export default function CreateReportPage() {
               </select>
               <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
             </div>
+            {route === 'Khác' && (
+              <div className="mt-2 relative">
+                <input
+                  type="text"
+                  placeholder="Nhập tên tuyến đường khác"
+                  className="w-full bg-surface-bright border border-outline-variant rounded-lg p-4 text-base focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                  value={customRoute}
+                  onChange={(e) => setCustomRoute(e.target.value)}
+                />
+              </div>
+            )}
           </div>
 
           <div className="bg-white border border-indigo-100 p-4 rounded-xl space-y-2 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
@@ -304,6 +326,17 @@ export default function CreateReportPage() {
               </select>
               <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">storefront</span>
             </div>
+            {dealer === 'Khác' && (
+              <div className="mt-2 relative">
+                <input
+                  type="text"
+                  placeholder="Nhập tên đại lý khác"
+                  className="w-full bg-surface-bright border border-outline-variant rounded-lg p-4 text-base focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                  value={customDealer}
+                  onChange={(e) => setCustomDealer(e.target.value)}
+                />
+              </div>
+            )}
           </div>
         </div>
 
