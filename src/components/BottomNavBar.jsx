@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const navItems = [
-  { path: '/', icon: 'home', label: 'Home' },
+  { path: '/', icon: 'home', label: 'Trang chủ' },
   { path: '/create', icon: 'add_circle', label: 'Tạo mới' },
   { path: '/settings', icon: 'settings', label: 'Cài đặt' },
 ];

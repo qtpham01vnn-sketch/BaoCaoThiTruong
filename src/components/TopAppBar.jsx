@@ -31,7 +31,7 @@ export default function TopAppBar({ title = 'BaoCaoThiTruong', showBack = false,
               }`}
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
             >
-              Home
+              Trang Chủ
             </button>
             <button
               onClick={() => navigate('/create')}
@@ -40,7 +40,7 @@ export default function TopAppBar({ title = 'BaoCaoThiTruong', showBack = false,
               }`}
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
             >
-              New Report
+              Tạo Báo Cáo
             </button>
           </nav>
         )}

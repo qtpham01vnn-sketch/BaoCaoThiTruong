@@ -49,7 +49,7 @@ export default function DashboardPage() {
         <section className="mb-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-semibold text-on-surface">Market Intelligence</h2>
+              <h2 className="text-2xl font-semibold text-on-surface">Tổng Quan Thị Trường</h2>
               <p className="text-sm text-on-surface-variant">Xem và quản lý các báo cáo thị trường.</p>
             </div>
             <div className="flex items-center gap-2">
@@ -74,7 +74,7 @@ export default function DashboardPage() {
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-2">
                 <span className="p-2 bg-primary-fixed rounded-lg text-primary material-symbols-outlined">auto_awesome</span>
-                <span className="text-lg font-semibold">Weekly Market Pulse</span>
+                <span className="text-lg font-semibold">Nhịp Đập Thị Trường</span>
               </div>
               <span className="text-xs text-outline" style={{ fontFamily: "'JetBrains Mono', monospace" }}>Cập nhật 2h trước</span>
             </div>
@@ -86,7 +86,7 @@ export default function DashboardPage() {
                 onClick={() => navigate('/create')}
                 className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-container text-white px-4 py-2 rounded-lg font-semibold text-sm shadow-sm hover:opacity-90 active:scale-95"
               >
-                <span>✨ AI Rewrite Report</span>
+                <span>✨ Phân Tích Bằng AI</span>
               </button>
             </div>
           </div>
