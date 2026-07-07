@@ -94,11 +94,33 @@ export default function ReportDetailPage() {
         />
       </div>
 
-      <main className="mt-20 mb-24 max-w-[1200px] mx-auto px-4 md:px-8 grid grid-cols-1 lg:grid-cols-12 gap-4 page-enter">
+      <main className="mt-20 mb-24 max-w-[1200px] mx-auto px-4 md:px-8 grid grid-cols-1 lg:grid-cols-12 gap-4 page-enter print:mt-0 print:mb-0 print:block">
+        
+        {/* TCVN Print Header (Nghị định 30/CP) */}
+        <div className="hidden print:block mb-8" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
+          <div className="flex justify-between items-start mb-6 text-[13pt] text-black">
+            <div className="text-center w-1/2 flex flex-col items-center">
+              <p className="font-bold">CÔNG TY PHƯƠNG NAM</p>
+              <p className="font-bold">SỐ: {report.id?.substring(0,4) || '01'}/BC-PN</p>
+              <div className="w-1/3 border-t-[1px] border-black mt-1"></div>
+            </div>
+            <div className="text-center w-1/2 flex flex-col items-center">
+              <p className="font-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+              <p className="font-bold">Độc lập - Tự do - Hạnh phúc</p>
+              <div className="w-1/2 border-t-[1.5px] border-black mt-1"></div>
+              <p className="italic mt-2">TP.HCM, ngày ... tháng ... năm 202...</p>
+            </div>
+          </div>
+          <div className="text-center mb-6 text-black">
+            <h1 className="font-bold text-[16pt] mb-2">BÁO CÁO THỊ TRƯỜNG</h1>
+            <p className="font-bold text-[14pt]">V/v: Tuyến {report.route}</p>
+          </div>
+        </div>
+
         {/* Left Column: Primary Content */}
-        <div className="lg:col-span-8 space-y-6">
+        <div className="lg:col-span-8 space-y-6 print:space-y-4">
           {/* Header Card */}
-          <section className="bg-white border border-outline-variant p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group">
+          <section className="bg-white border border-outline-variant p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group print:hidden">
             <div>
               <h2 className="text-2xl font-semibold text-on-surface">{report.title}</h2>
               <div className="flex items-center gap-4 mt-2 text-on-surface-variant">
@@ -128,8 +150,8 @@ export default function ReportDetailPage() {
           </section>
 
           {/* AI Finalized Report */}
-          <article className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 p-4 md:p-10 relative overflow-hidden rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
-            <div className="absolute top-0 right-0 flex items-center">
+          <article className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 p-4 md:p-10 relative overflow-hidden rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 print:bg-none print:border-none print:p-0 print:shadow-none">
+            <div className="absolute top-0 right-0 flex items-center print:hidden">
               <button 
                 onClick={handleCopy}
                 className="px-4 py-1.5 bg-surface-container-high text-primary text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 hover:bg-surface-dim transition-colors"
@@ -143,9 +165,9 @@ export default function ReportDetailPage() {
               </div>
             </div>
 
-            <div className="space-y-6 pt-4">
-              <div className="pb-4">
-                <p className="text-base text-on-surface leading-relaxed whitespace-pre-wrap font-medium">
+            <div className="space-y-6 pt-4 print:pt-0">
+              <div className="pb-4 print:pb-0">
+                <p className="text-base text-on-surface leading-relaxed whitespace-pre-wrap font-medium print:font-['Times_New_Roman'] print:text-[14pt] print:text-black print:font-normal print:leading-normal print:text-justify">
                   {report.aiReport || report.rawNotes}
                 </p>
               </div>
@@ -153,7 +175,7 @@ export default function ReportDetailPage() {
           </article>
 
           {/* Feedback Section */}
-          <section className="bg-white border border-outline-variant overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+          <section className="bg-white border border-outline-variant overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-all duration-300 print:hidden">
             <div className="bg-surface-container px-4 py-3 flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">chat_bubble</span>
               <h3 className="text-lg font-semibold text-on-surface">Góp ý từ quản lý</h3>
@@ -213,7 +235,7 @@ export default function ReportDetailPage() {
         </div>
 
         {/* Right Column: Meta */}
-        <aside className="lg:col-span-4 space-y-6">
+        <aside className="lg:col-span-4 space-y-6 print:hidden">
           {/* Agent Details */}
           <section className="bg-white border border-outline-variant p-4 space-y-4 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
             <h4 className="text-xs uppercase font-bold text-on-surface-variant" style={{ fontFamily: "'JetBrains Mono', monospace" }}>

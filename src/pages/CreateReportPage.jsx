@@ -235,7 +235,8 @@ export default function CreateReportPage() {
 
       <main className="max-w-screen-xl mx-auto px-4 pt-20 space-y-6 page-enter">
         {/* Section 1: Nhân viên báo cáo */}
-        <div className="bg-white border border-outline-variant p-4 rounded-xl space-y-2 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary/50 transition-all duration-300 group">
+        <div className="bg-white border border-indigo-100 p-4 rounded-xl space-y-2 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-teal-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
             NHÂN VIÊN BÁO CÁO
           </label>
@@ -252,7 +253,8 @@ export default function CreateReportPage() {
         </div>
 
         {/* Section 1b: Số xe đi thị trường */}
-        <div className="bg-white border border-outline-variant p-4 rounded-xl space-y-2 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary/50 transition-all duration-300 group">
+        <div className="bg-white border border-indigo-100 p-4 rounded-xl space-y-2 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-teal-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
             SỐ XE ĐI THỊ TRƯỜNG
           </label>
@@ -270,7 +272,8 @@ export default function CreateReportPage() {
 
         {/* Section 2: Tuyến đường + Đại lý */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white border border-outline-variant p-4 rounded-xl space-y-2 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary/50 transition-all duration-300 group">
+          <div className="bg-white border border-indigo-100 p-4 rounded-xl space-y-2 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-teal-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
               Tuyến đường / Khu vực
             </label>
@@ -286,7 +289,8 @@ export default function CreateReportPage() {
             </div>
           </div>
 
-          <div className="bg-white border border-outline-variant p-4 rounded-xl space-y-2 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-primary/50 transition-all duration-300 group">
+          <div className="bg-white border border-indigo-100 p-4 rounded-xl space-y-2 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-teal-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
               Đại lý / Cửa hàng
             </label>
@@ -304,15 +308,16 @@ export default function CreateReportPage() {
         </div>
 
         {/* Section 3: Raw Notes */}
-        <div className="bg-white border border-outline-variant p-4 rounded-xl space-y-2 shadow-sm hover:shadow-md hover:border-primary/50 transition-all duration-300 group">
-          <div className="flex justify-between items-center">
+        <div className="bg-white border border-indigo-100 p-4 rounded-xl space-y-2 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-teal-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div className="flex justify-between items-center relative z-10">
             <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
               Nhập ghi chú nhanh
             </label>
             <span className="text-xs text-outline italic" style={{ fontFamily: "'JetBrains Mono', monospace" }}>Dữ liệu thô</span>
           </div>
           <textarea
-            className="w-full min-h-[140px] bg-surface-bright border border-outline-variant rounded-lg p-4 text-base focus:border-primary focus:ring-1 focus:ring-primary resize-none placeholder:text-outline outline-none"
+            className="w-full min-h-[140px] bg-surface-bright border border-outline-variant rounded-lg p-4 text-base focus:border-primary focus:ring-1 focus:ring-primary resize-none placeholder:text-outline outline-none relative z-10"
             placeholder="VD: Sáng ghé đại lý hỏi thăm về mẫu mã mới triển khai của Phương Nam 30x60... Htai theo đại lý thì cty VNM tung ra dòng sp 60x60 giá hợp lý..."
             value={rawNotes}
             onChange={(e) => setRawNotes(e.target.value)}
@@ -364,8 +369,9 @@ export default function CreateReportPage() {
         </div>
 
         {/* Section 6: Attachments */}
-        <div className="bg-white border border-outline-variant p-4 rounded-xl space-y-2 shadow-sm hover:shadow-md transition-all duration-300">
-          <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+        <div className="bg-white border border-indigo-100 p-4 rounded-xl space-y-2 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-teal-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider relative z-10" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
             Ảnh cửa hàng, bảng giá, đối thủ
           </label>
           
