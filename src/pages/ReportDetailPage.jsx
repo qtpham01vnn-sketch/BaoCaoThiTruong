@@ -98,7 +98,7 @@ export default function ReportDetailPage() {
         {/* Left Column: Primary Content */}
         <div className="lg:col-span-8 space-y-6">
           {/* Header Card */}
-          <section className="bg-white border border-outline-variant p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-xl">
+          <section className="bg-white border border-outline-variant p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group">
             <div>
               <h2 className="text-2xl font-semibold text-on-surface">{report.title}</h2>
               <div className="flex items-center gap-4 mt-2 text-on-surface-variant">
@@ -128,7 +128,7 @@ export default function ReportDetailPage() {
           </section>
 
           {/* AI Finalized Report */}
-          <article className="bg-white border border-outline-variant p-4 md:p-10 relative overflow-hidden rounded-xl">
+          <article className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 p-4 md:p-10 relative overflow-hidden rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
             <div className="absolute top-0 right-0 flex items-center">
               <button 
                 onClick={handleCopy}
@@ -153,7 +153,7 @@ export default function ReportDetailPage() {
           </article>
 
           {/* Feedback Section */}
-          <section className="bg-white border border-outline-variant overflow-hidden rounded-xl">
+          <section className="bg-white border border-outline-variant overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
             <div className="bg-surface-container px-4 py-3 flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">chat_bubble</span>
               <h3 className="text-lg font-semibold text-on-surface">Góp ý từ quản lý</h3>
@@ -215,7 +215,7 @@ export default function ReportDetailPage() {
         {/* Right Column: Meta */}
         <aside className="lg:col-span-4 space-y-6">
           {/* Agent Details */}
-          <section className="bg-white border border-outline-variant p-4 space-y-4 rounded-xl">
+          <section className="bg-white border border-outline-variant p-4 space-y-4 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
             <h4 className="text-xs uppercase font-bold text-on-surface-variant" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
               Thông tin nhân sự
             </h4>
@@ -247,7 +247,7 @@ export default function ReportDetailPage() {
           </section>
 
           {/* Dealer Info */}
-          <section className="bg-white border border-outline-variant p-4 space-y-2 rounded-xl">
+          <section className="bg-white border border-outline-variant p-4 space-y-2 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
             <h4 className="text-xs uppercase font-bold text-on-surface-variant" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
               Thông tin đại lý
             </h4>
@@ -272,7 +272,7 @@ export default function ReportDetailPage() {
             </button>
             <button 
               onClick={() => handleStatusUpdate('approved')}
-              className="w-full py-3 bg-primary text-on-primary font-semibold text-sm rounded-xl hover:opacity-90 flex items-center justify-center gap-2 shadow-sm active:scale-[0.98]"
+              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold text-sm rounded-xl hover:shadow-lg hover:-translate-y-1 flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-all duration-300"
             >
               <span className="material-symbols-outlined">check_circle</span>
               Phê duyệt báo cáo

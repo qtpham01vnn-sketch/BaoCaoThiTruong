@@ -26,8 +26,8 @@ export default function TopAppBar({ title = 'BaoCaoThiTruong', showBack = false,
           <nav className="flex gap-4">
             <button
               onClick={() => navigate('/')}
-              className={`text-xs font-medium px-2 py-1 rounded transition-colors ${
-                location.pathname === '/' ? 'text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container'
+              className={`text-sm font-medium px-4 py-1.5 rounded-lg transition-all duration-300 ${
+                location.pathname === '/' ? 'bg-gradient-to-r from-teal-500 to-indigo-500 text-white shadow-md' : 'text-on-surface-variant hover:bg-surface-container-low hover:text-primary'
               }`}
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
             >
@@ -35,8 +35,8 @@ export default function TopAppBar({ title = 'BaoCaoThiTruong', showBack = false,
             </button>
             <button
               onClick={() => navigate('/create')}
-              className={`text-xs font-medium px-2 py-1 rounded transition-colors ${
-                location.pathname === '/create' ? 'text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container'
+              className={`text-sm font-medium px-4 py-1.5 rounded-lg transition-all duration-300 ${
+                location.pathname === '/create' ? 'bg-gradient-to-r from-teal-500 to-indigo-500 text-white shadow-md' : 'text-on-surface-variant hover:bg-surface-container-low hover:text-primary'
               }`}
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
             >

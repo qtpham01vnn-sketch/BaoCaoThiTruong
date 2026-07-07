@@ -18,10 +18,10 @@ export default function BottomNavBar() {
           <button
             key={item.path}
             onClick={() => navigate(item.path)}
-            className={`flex flex-col items-center justify-center px-4 py-1 rounded-full transition-all active:scale-90 ${
+            className={`flex flex-col items-center justify-center px-4 py-1.5 rounded-2xl transition-all duration-300 active:scale-90 ${
               isActive
-                ? 'bg-secondary-container text-on-secondary-container'
-                : 'text-on-surface-variant hover:bg-surface-container-low'
+                ? 'bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg shadow-indigo-500/30'
+                : 'text-on-surface-variant hover:bg-surface-container-low hover:text-primary'
             }`}
           >
             <span

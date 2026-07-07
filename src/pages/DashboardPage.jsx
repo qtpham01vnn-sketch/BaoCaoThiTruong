@@ -69,8 +69,8 @@ export default function DashboardPage() {
 
         {/* AI Summary Card */}
         <section className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="md:col-span-2 bg-white border border-outline-variant rounded-xl p-4 flex flex-col justify-between relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-tertiary-fixed-dim"></div>
+          <div className="md:col-span-2 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 opacity-80 group-hover:opacity-100 transition-opacity"></div>
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-2">
                 <span className="p-2 bg-primary-fixed rounded-lg text-primary material-symbols-outlined">auto_awesome</span>
@@ -86,13 +86,13 @@ export default function DashboardPage() {
                 onClick={() => navigate('/create')}
                 className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-container text-white px-4 py-2 rounded-lg font-semibold text-sm shadow-sm hover:opacity-90 active:scale-95"
               >
-                <span>✨ Phân Tích Bằng AI</span>
+                <span className="group-hover:animate-pulse">✨ Phân Tích Bằng AI</span>
               </button>
             </div>
           </div>
 
-          <div className="bg-surface-container-high border border-outline-variant rounded-xl p-4 flex flex-col justify-center items-center text-center">
-            <span className="text-4xl font-bold text-primary mb-1">{totalReports}</span>
+          <div className="bg-gradient-to-br from-emerald-50 to-teal-100 border border-emerald-200 rounded-xl p-4 flex flex-col justify-center items-center text-center shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <span className="text-5xl font-extrabold text-teal-600 mb-1 drop-shadow-sm">{totalReports}</span>
             <span className="text-xs text-on-surface-variant uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
               Báo cáo tháng này
             </span>
@@ -111,7 +111,7 @@ export default function DashboardPage() {
               <div
                 key={report.id}
                 onClick={() => navigate(`/report/${report.id}`)}
-                className="bg-white border border-outline-variant rounded-xl overflow-hidden hover:shadow-lg transition-all group cursor-pointer active:scale-[0.98]"
+                className="bg-white border border-outline-variant rounded-xl overflow-hidden shadow-sm hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] hover:-translate-y-2 transition-all duration-300 group cursor-pointer active:scale-[0.98]"
               >
                 <div className="h-28 bg-surface-container relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-tertiary-fixed/20 flex items-center justify-center">
@@ -146,7 +146,7 @@ export default function DashboardPage() {
           {/* Add New Placeholder */}
           <div
             onClick={() => navigate('/create')}
-            className="bg-surface border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center p-10 hover:border-primary transition-colors cursor-pointer text-center group active:scale-[0.98]"
+            className="bg-surface border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center p-10 hover:border-primary hover:bg-primary/5 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 cursor-pointer text-center group active:scale-[0.98]"
           >
             <span className="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors mb-4" style={{ fontSize: '48px' }}>
               add_circle
