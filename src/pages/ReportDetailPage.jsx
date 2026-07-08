@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import TopAppBar from '../components/TopAppBar';
 import BottomNavBar from '../components/BottomNavBar';
 import { getReportById, updateReport } from '../lib/storage';
+import { generateWordDocument } from '../lib/wordExport';
 
 const STATUS_MAP = {
   approved: { label: 'Đã phê duyệt', bg: 'bg-tertiary-fixed', text: 'text-on-tertiary-fixed-variant' },
@@ -40,6 +41,15 @@ export default function ReportDetailPage() {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleExportWord = async () => {
+    try {
+      await generateWordDocument(report);
+    } catch (error) {
+      console.error("Lỗi xuất Word:", error);
+      alert("Có lỗi xảy ra khi xuất file Word.");
+    }
   };
 
   const handleCopy = () => {
@@ -140,13 +150,22 @@ export default function ReportDetailPage() {
                 )}
               </div>
             </div>
-            <button 
-              onClick={handlePrint}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg font-semibold text-sm hover:opacity-90 active:scale-95"
-            >
-              <span className="material-symbols-outlined text-[18px]">download</span>
-              Xuất PDF
-            </button>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={handleExportWord}
+                className="flex items-center gap-2 px-4 py-2 bg-[#2b579a] text-white rounded-lg font-semibold text-sm hover:opacity-90 active:scale-95 transition-all shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[18px]">description</span>
+                Xuất Word
+              </button>
+              <button 
+                onClick={handlePrint}
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg font-semibold text-sm hover:opacity-90 active:scale-95 transition-all shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[18px]">download</span>
+                Xuất PDF
+              </button>
+            </div>
           </section>
 
           {/* AI Finalized Report */}
