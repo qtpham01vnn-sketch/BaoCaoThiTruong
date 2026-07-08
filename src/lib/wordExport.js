@@ -1,5 +1,7 @@
-import { Document, Packer, Paragraph, TextRun, AlignmentType, Table, TableRow, TableCell, BorderStyle, WidthType, convertMillimetersToTwips } from 'docx';
+import { Document, Packer, Paragraph, TextRun, AlignmentType, Table, TableRow, TableCell, BorderStyle, WidthType } from 'docx';
 import { saveAs } from 'file-saver';
+
+const convertMillimetersToTwips = (mm) => Math.round(mm * 56.6929);
 
 export async function generateWordDocument(report) {
   const currentDate = new Date();
