@@ -1,0 +1,1872 @@
+Tổng hợp source code BaoCaoThiTruong cho Lovable
+=================================================
+
+
+--- FILE: index.html ---
+
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="BaoCaoThiTruong - Hệ thống báo cáo thị trường thông minh với AI" />
+    <title>BaoCaoThiTruong</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+
+
+--- FILE: package.json ---
+
+{
+  "name": "baocaothitruong-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.2",
+    "@vitejs/plugin-react": "^6.0.3",
+    "tailwindcss": "^4.3.2",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.1"
+  },
+  "dependencies": {
+    "react-router-dom": "^7.18.1"
+  }
+}
+
+
+--- FILE: src/App.jsx ---
+
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
+import CreateReportPage from './pages/CreateReportPage';
+import ReportDetailPage from './pages/ReportDetailPage';
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="/create" element={<CreateReportPage />} />
+        <Route path="/report/:id" element={<ReportDetailPage />} />
+        <Route path="/settings" element={<SettingsPlaceholder />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+function SettingsPlaceholder() {
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="text-center">
+        <span className="material-symbols-outlined text-6xl text-outline-variant mb-4 block">settings</span>
+        <h2 className="text-xl font-semibold text-on-surface">Cài đặt</h2>
+        <p className="text-sm text-on-surface-variant mt-2">Tính năng đang được phát triển.</p>
+      </div>
+    </div>
+  );
+}
+
+
+--- FILE: src/components/BottomNavBar.jsx ---
+
+import { useNavigate, useLocation } from 'react-router-dom';
+
+const navItems = [
+  { path: '/', icon: 'home', label: 'Trang chủ' },
+  { path: '/create', icon: 'add_circle', label: 'Tạo mới' },
+  { path: '/settings', icon: 'settings', label: 'Cài đặt' },
+];
+
+export default function BottomNavBar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  return (
+    <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-2 bg-surface border-t border-outline-variant">
+      {navItems.map((item) => {
+        const isActive = location.pathname === item.path;
+        return (
+          <button
+            key={item.path}
+            onClick={() => navigate(item.path)}
+            className={`flex flex-col items-center justify-center px-4 py-1.5 rounded-2xl transition-all duration-300 active:scale-90 ${
+              isActive
+                ? 'bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg shadow-indigo-500/30'
+                : 'text-on-surface-variant hover:bg-surface-container-low hover:text-primary'
+            }`}
+          >
+            <span
+              className="material-symbols-outlined text-[22px]"
+              style={isActive ? { fontVariationSettings: "'FILL' 1" } : {}}
+            >
+              {item.icon}
+            </span>
+            <span className="text-[11px] mt-0.5 font-medium" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              {item.label}
+            </span>
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
+
+--- FILE: src/components/TopAppBar.jsx ---
+
+import { useNavigate, useLocation } from 'react-router-dom';
+
+export default function TopAppBar({ title = 'BaoCaoThiTruong', showBack = false, rightContent = null }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  return (
+    <header className="bg-surface border-b border-outline-variant flex justify-between items-center w-full px-4 h-16 z-50 fixed top-0 left-0 right-0">
+      <div className="flex items-center gap-4">
+        {showBack && (
+          <button
+            onClick={() => navigate(-1)}
+            className="material-symbols-outlined text-primary hover:bg-surface-container p-2 rounded-full transition-colors active:scale-95"
+          >
+            arrow_back
+          </button>
+        )}
+        <h1 className="font-bold text-xl text-primary" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+          {title}
+        </h1>
+      </div>
+
+      {/* Desktop Nav */}
+      <div className="hidden md:flex gap-6 items-center">
+        {!showBack && (
+          <nav className="flex gap-4">
+            <button
+              onClick={() => navigate('/')}
+              className={`text-sm font-medium px-4 py-1.5 rounded-lg transition-all duration-300 ${
+                location.pathname === '/' ? 'bg-gradient-to-r from-teal-500 to-indigo-500 text-white shadow-md' : 'text-on-surface-variant hover:bg-surface-container-low hover:text-primary'
+              }`}
+              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+            >
+              Trang Chủ
+            </button>
+            <button
+              onClick={() => navigate('/create')}
+              className={`text-sm font-medium px-4 py-1.5 rounded-lg transition-all duration-300 ${
+                location.pathname === '/create' ? 'bg-gradient-to-r from-teal-500 to-indigo-500 text-white shadow-md' : 'text-on-surface-variant hover:bg-surface-container-low hover:text-primary'
+              }`}
+              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+            >
+              Tạo Báo Cáo
+            </button>
+          </nav>
+        )}
+        {rightContent}
+      </div>
+    </header>
+  );
+}
+
+
+--- FILE: src/index.css ---
+
+@import "tailwindcss";
+
+/* ===== DESIGN TOKENS (CSS Variables from DESIGN.md) ===== */
+@theme {
+  --color-background: #faf9ff;
+  --color-surface: #faf9ff;
+  --color-surface-dim: #ccdaff;
+  --color-surface-bright: #faf9ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f1f3ff;
+  --color-surface-container: #e9edff;
+  --color-surface-container-high: #e1e8ff;
+  --color-surface-container-highest: #d8e2ff;
+  --color-on-surface: #051a3e;
+  --color-on-surface-variant: #434654;
+  --color-inverse-surface: #1d3054;
+  --color-inverse-on-surface: #edf0ff;
+  --color-outline: #737685;
+  --color-outline-variant: #c3c6d6;
+  --color-surface-tint: #0c56d0;
+  --color-primary: #003d9b;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #0052cc;
+  --color-on-primary-container: #c4d2ff;
+  --color-inverse-primary: #b2c5ff;
+  --color-secondary: #535f73;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d4e0f8;
+  --color-on-secondary-container: #576377;
+  --color-tertiary: #004e32;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #006844;
+  --color-on-tertiary-container: #7de7b2;
+  --color-tertiary-fixed: #8df7c1;
+  --color-tertiary-fixed-dim: #71dba6;
+  --color-on-tertiary-fixed: #002113;
+  --color-on-tertiary-fixed-variant: #005235;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-primary-fixed: #dae2ff;
+  --color-primary-fixed-dim: #b2c5ff;
+  --color-on-primary-fixed: #001848;
+  --color-on-primary-fixed-variant: #0040a2;
+  --color-secondary-fixed: #d7e3fb;
+  --color-secondary-fixed-dim: #bbc7de;
+  --color-on-secondary-fixed: #101c2d;
+  --color-on-secondary-fixed-variant: #3b475b;
+  --color-surface-variant: #d8e2ff;
+
+  --font-sans: 'Hanken Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* ===== GLOBAL STYLES ===== */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+  overflow-x: hidden;
+}
+
+/* ===== CUSTOM SCROLLBAR ===== */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--color-surface-container-low); }
+::-webkit-scrollbar-thumb { background: var(--color-outline-variant); border-radius: 10px; }
+
+/* ===== AI GRADIENT BORDER ===== */
+.ai-gradient-border {
+  border: 2px solid transparent;
+  background-image: linear-gradient(#ffffff, #ffffff), linear-gradient(to right, #0052cc, #71dba6);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+}
+
+/* ===== AI SHIMMER ===== */
+.ai-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ===== AI ACCENT BORDER (Login) ===== */
+.ai-accent-border {
+  position: relative;
+}
+.ai-accent-border::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #003d9b, #0052cc, #7de7b2);
+  opacity: 0.6;
+}
+
+/* ===== LOGIN CARD SHADOW ===== */
+.login-card {
+  box-shadow: 0px 4px 12px rgba(9, 30, 66, 0.08);
+}
+
+/* ===== MATERIAL SYMBOLS CONFIG ===== */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ===== SMOOTH TRANSITIONS ===== */
+button, a, input, select, textarea {
+  transition: all 0.15s ease;
+}
+
+/* ===== PREVENT BODY SCROLL WHEN MODAL OPEN ===== */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* ===== PAGE TRANSITION ===== */
+.page-enter {
+  animation: fadeIn 0.2s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+--- FILE: src/lib/storage.js ---
+
+// localStorage helper for saving/loading reports
+
+const STORAGE_KEY = 'baocaothitruong_reports';
+
+export function getReports() {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function getReportById(id) {
+  const reports = getReports();
+  return reports.find(r => r.id === id) || null;
+}
+
+export function saveReport(report) {
+  const reports = getReports();
+  const newReport = {
+    ...report,
+    id: report.id || Date.now().toString(),
+    createdAt: report.createdAt || new Date().toISOString(),
+  };
+  reports.unshift(newReport);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+  return newReport;
+}
+
+export function updateReport(id, updates) {
+  const reports = getReports();
+  const index = reports.findIndex(r => r.id === id);
+  if (index !== -1) {
+    reports[index] = { ...reports[index], ...updates };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+    return reports[index];
+  }
+  return null;
+}
+
+export function deleteReport(id) {
+  const reports = getReports().filter(r => r.id !== id);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+}
+
+// Seed demo data if empty
+export function seedDemoData() {
+  if (getReports().length > 0) return;
+
+  const demoReports = [
+    {
+      id: '1',
+      agentName: 'Nguyễn Hoàng Nam',
+      vehicleNumber: '60C - 815.56',
+      route: 'Cần Thơ - Vĩnh Long',
+      dealer: 'Đại lý Minh Quân - 123 Đường 30/4',
+      title: 'Khảo sát Đại lý Cấp 1 - KV Miền Tây',
+      rawNotes: 'Sáng ghé Minh Quân, thị trường tăng 15%, đối thủ X chiết khấu 2% cho đại lý mới',
+      aiReport: `***Chào Toàn Thể Anh/ Chị/ Em!\n**KHUNG BÁO CÁO THỊ TRƯỜNG HẰNG NGÀY!\nNgười BC: Nguyễn Hoàng Nam\n*BC: Ngày 15/05/2024\n*Số xe đi thị trường: 60C - 815.56\n*Khu vực/Tuyến đường: Cần Thơ - Vĩnh Long\n\n1. Diễn Biến Thị Trường Quan Trọng\n- Sáng ghé Minh Quân, thị trường khu vực Cần Thơ ghi nhận sức tiêu thụ tăng 15%.\n- Các đại lý tập trung nhập hàng chuẩn bị cho cao điểm.\n\n2. Phân Tích Nguyên Nhân\n- Áp lực cạnh tranh gia tăng, đối thủ X vừa tung gói chiết khấu 2% cho đại lý mới.\n- Vận chuyển thủy gặp khó do triều cường.\n\n3. Giải Pháp & Đề Xuất Cho Công Ty\n- Giải pháp ngắn hạn: Xem xét điều chỉnh chính sách hậu mãi cho nhóm đại lý Platinum.\n- Giải pháp dài hạn: Hỗ trợ chi phí kho bãi mùa lũ.\n\n4. Đóng Góp Phát Triển\n- Theo dõi sát sản lượng của đại lý Minh Quân trong tuần tới.`,
+      status: 'approved',
+      dealersVisited: 12,
+      startTime: '08:15 AM',
+      endTime: '09:45 AM',
+      duration: '1h 30m',
+      feedback: {
+        author: 'Sếp kinh doanh (Trần Văn A)',
+        initials: 'SK',
+        time: '2 giờ trước',
+        message: 'Báo cáo rất chi tiết, đặc biệt là phần phân tích đối thủ X. Chú ý theo dõi sát sản lượng của đại lý Minh Quân trong tuần tới.',
+      },
+      createdAt: '2024-05-15T08:15:00.000Z',
+    },
+  ];
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(demoReports));
+}
+
+
+--- FILE: src/main.jsx ---
+
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+
+
+--- FILE: src/pages/CreateReportPage.jsx ---
+
+import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import TopAppBar from '../components/TopAppBar';
+import BottomNavBar from '../components/BottomNavBar';
+import { saveReport } from '../lib/storage';
+
+const ROUTES = [
+  'Quận 1 - Tuyến Trung Tâm, TP.HCM',
+  'Quận 3 - Tuyến Văn Phòng, TP.HCM',
+  'Quận 7, TP.HCM',
+  'Tân Phước Khánh - Bến Cát - Bình Dương',
+  'Thuận An - Bình Dương',
+  'Dĩ An - Bình Dương',
+  'Cần Thơ - Vĩnh Long',
+  'Khu vực Đồng Nai',
+  'Khác',
+];
+
+const DEALERS = [
+  'Phương Hùng Dũng - 124 Lê Lợi',
+  'Minh Khang - 45 Hai Bà Trưng',
+  'Tạp hóa Cô Năm - 78 Nguyễn Huệ',
+  'Đại lý Minh Quân - 123 Đường 30/4',
+  'Đại lý Thành Đạt - 56 Trần Hưng Đạo',
+  'Khác',
+];
+
+function getTodayString() {
+  const now = new Date();
+  const d = String(now.getDate()).padStart(2, '0');
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const y = now.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+
+// Hàm giả lập AI xử lý text: Sửa lỗi chính tả, ngắt câu, nhưng KHÔNG THÊM data giả
+function simulateAIProcessing(rawText) {
+  // Thay thế các từ viết tắt phổ biến trong ngành
+  let processed = rawText
+    .replace(/hỏithawm/gi, 'hỏi thăm')
+    .replace(/tr khai/gi, 'triển khai')
+    .replace(/ch bị/gi, 'chuẩn bị')
+    .replace(/jcao/gi, 'cao')
+    .replace(/htai/gi, 'Hiện tại')
+    .replace(/cty/gi, 'công ty')
+    .replace(/sp /gi, 'sản phẩm ')
+    .replace(/côgn/gi, 'công')
+    .replace(/teanh/gi, 'tranh')
+    .replace(/truwongf/gi, 'trường')
+    .replace(/n2000m2/gi, '2000m2')
+    .replace(/hox/gi, 'hỗ');
+
+  // Viết hoa chữ cái đầu câu
+  processed = processed.replace(/(^\s*\w|[.!?]\s*\w)/g, function(c) {
+    return c.toUpperCase();
+  });
+
+  return processed.trim();
+}
+
+function generateAIReport({ agentName, vehicleNumber, route, dealer, rawNotes }) {
+  const today = getTodayString();
+  const cleanedNotes = simulateAIProcessing(rawNotes);
+  const lowerNotes = rawNotes.toLowerCase();
+
+  // Dynamic Content Generation based on Keywords to simulate "Smart AI"
+  let cause = '';
+  let solution = '';
+  let contribution = '';
+
+  if (lowerNotes.includes('giá') || lowerNotes.includes('chiết khấu')) {
+    cause += '- Áp lực cạnh tranh về giá đang tăng cao: Đối thủ liên tục tung ra các chương trình chiết khấu sâu và chính sách giá linh hoạt nhằm gia tăng thị phần, gây áp lực trực tiếp lên các dòng sản phẩm chủ lực của chúng ta.\n';
+    cause += '- Tâm lý khách hàng: Đại lý có xu hướng ưu tiên nhập các mặt hàng có biên độ lợi nhuận cao và quay vòng vốn nhanh, dẫn đến việc sản phẩm của chúng ta tạm thời bị hạn chế trưng bày.\n';
+    cause += '- Động thái xả kho: Có dấu hiệu cho thấy một số đối thủ đang xả hàng tồn kho cuối quý, khiến giá bán lẻ trên thị trường bị xáo trộn.\n';
+    
+    solution += '- Giải pháp xử lý ngay (Ngắn hạn): Đề xuất Ban Giám đốc xem xét ban hành ngay chương trình hỗ trợ giá tạm thời, kết hợp tặng kèm sản phẩm hoặc chiết khấu thanh toán nhanh để giữ chân các đại lý trọng điểm.\n';
+    solution += '- Chiến lược cạnh tranh (Dài hạn): Không nên tham gia vào cuộc chiến giá cả kéo dài. Cần tập trung định vị lại phân khúc sản phẩm, nhấn mạnh vào chất lượng, dịch vụ hậu mãi và uy tín thương hiệu Phương Nam.\n';
+    solution += '- Đề xuất Trade Marketing: Triển khai các gói combo mua hàng tặng vật phẩm trưng bày (kệ, bảng hiệu) để tăng độ phủ nhận diện thương hiệu tại điểm bán.\n';
+  }
+  
+  if (lowerNotes.includes('công trình') || lowerNotes.includes('m2') || lowerNotes.includes('sàn')) {
+    cause += '- Nhu cầu thị trường chuyển dịch: Các dự án công trình, khu dân cư đang bước vào giai đoạn hoàn thiện, kéo theo nhu cầu khổng lồ về các dòng sản phẩm gạch ốp lát kích thước lớn (như đã ghi nhận).\n';
+    cause += '- Yêu cầu kỹ thuật cao: Khách hàng dự án yêu cầu rất khắt khe về chất lượng men, độ chống thấm và tính đồng màu của sản phẩm.\n';
+    cause += '- Nguồn cung: Hiện tại một số đối thủ chưa đáp ứng đủ số lượng hoặc thời gian giao hàng, tạo ra khoảng trống thị trường mà chúng ta có thể khai thác.\n';
+    
+    contribution += '- Công tác thị trường: Đề nghị anh em sale tiếp tục bám sát tiến độ của các công trình đang thi công, thu thập thông tin chủ thầu để tư vấn trực tiếp.\n';
+    contribution += '- Công tác hậu cần: Đề xuất bộ phận Kho vận chuẩn bị sẵn sàng phương án điều xe, đảm bảo tiến độ giao hàng cho các đơn hàng dự án lớn nhằm tạo uy tín với chủ đầu tư.\n';
+    contribution += '- Phối hợp chéo: Cần sự phối hợp chặt chẽ giữa bộ phận Dự án và Thị trường để chốt các deal số lượng lớn.\n';
+  }
+
+  if (lowerNotes.includes('mẫu mới') || lowerNotes.includes('chuẩn bị ra') || lowerNotes.includes('mẫu mã')) {
+    cause += '- Xu hướng thẩm mỹ thay đổi: Thị hiếu người tiêu dùng đang hướng tới các thiết kế hiện đại, tinh tế. Đối thủ đã nhanh chóng nắm bắt và tung ra các mẫu mã mới.\n';
+    cause += '- Hiệu ứng truyền thông: Việc ra mắt mẫu mới của đối thủ tạo được sự tò mò và thu hút sự chú ý lớn từ phía các đại lý bán lẻ.\n';
+    cause += '- Điểm nghẽn hiện tại: Dải sản phẩm của chúng ta tuy chất lượng nhưng đang có dấu hiệu bão hòa về mặt hình ảnh thiết kế đối với người tiêu dùng.\n';
+    
+    solution += '- Phản ứng nhanh: Tăng cường truyền thông, nhắc nhớ lại các đặc tính ưu việt của dòng sản phẩm hiện tại (độ bền, chống xước, công nghệ nano).\n';
+    solution += '- Chiến lược R&D (Bền vững): Bộ phận R&D cần đẩy nhanh tiến độ nghiên cứu, khẩn trương đưa vào sản xuất và ra mắt các mẫu mã mới với thiết kế đột phá, bắt kịp xu hướng thị trường.\n';
+    solution += '- Khảo sát ý kiến: Đề nghị tổ chức lấy ý kiến các đại lý chiến lược về màu sắc, hoa văn trước khi sản xuất hàng loạt.\n';
+  }
+
+  // Fallbacks if no keywords matched
+  if (!cause) {
+    cause = '- Biến động chu kỳ: Sự điều chỉnh thông thường của thị trường sau các đợt cao điểm bán hàng.\n- Tâm lý e ngại rủi ro: Đại lý đang duy trì mức tồn kho an toàn, hạn chế nhập số lượng lớn do lo ngại sức mua yếu.\n- Tác động ngoại cảnh: Các yếu tố về vận chuyển, thời tiết ảnh hưởng đến tiến độ nhập hàng của khu vực.';
+  }
+  if (!solution) {
+    solution = '- Giải pháp chăm sóc: Tăng cường các chương trình trade marketing tại điểm bán, chăm sóc và hỗ trợ sắp xếp lại khu vực trưng bày cho đại lý.\n- Giải pháp chính sách: Tối ưu chi phí vận chuyển và cơ chế thưởng linh hoạt để kích thích đại lý nhập hàng.\n- Đào tạo sản phẩm: Cung cấp thêm tài liệu, mẫu vật lý để đại lý dễ dàng tư vấn cho khách lẻ.';
+  }
+  if (!contribution) {
+    contribution = '- Cam kết: Duy trì tần suất viếng thăm đều đặn để củng cố mối quan hệ chiến lược với hệ thống đại lý cấp 1.\n- Kế hoạch tuần tới: Lên danh sách các đại lý có sản lượng giảm sút để tập trung tìm hiểu nguyên nhân và tháo gỡ khó khăn.\n- Đề xuất chung: Cần tổ chức buổi họp nhanh đầu tuần để anh em chia sẻ thông tin chéo giữa các khu vực.';
+  }
+
+  // Tiêu chuẩn hoá tên (Title Case) và biển số (UPPERCASE)
+  const formatName = (name) => {
+    return name
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+  
+  const standardizedName = agentName ? formatName(agentName) : '';
+  const standardizedVehicle = vehicleNumber ? vehicleNumber.toUpperCase() : '(CHƯA NHẬP)';
+
+  return `BÁO CÁO THỊ TRƯỜNG HẰNG NGÀY
+Người BC: ${standardizedName}
+*BC: Ngày ${today}
+*Số xe đi thị trường: ${standardizedVehicle}
+*Khu vực/Tuyến đường: ${route}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. DIỄN BIẾN THỊ TRƯỜNG QUAN TRỌNG:
+
+${cleanedNotes}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+2. PHÂN TÍCH NGUYÊN NHÂN:
+
+(Đánh giá chuyên sâu dựa trên thực tế ghi nhận):
+${cause.trim()}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3. GIẢI PHÁP & ĐỀ XUẤT CHO CÔNG TY:
+
+${solution.trim()}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+4. ĐÓNG GÓP PHÁT TRIỂN:
+
+${contribution.trim()}`;
+}
+
+export default function CreateReportPage() {
+  const navigate = useNavigate();
+  const [agentName, setAgentName] = useState('');
+  const [vehicleNumber, setVehicleNumber] = useState('');
+  const [route, setRoute] = useState(ROUTES[0]);
+  const [dealer, setDealer] = useState(DEALERS[0]);
+  const [rawNotes, setRawNotes] = useState('');
+  const [aiReport, setAiReport] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [images, setImages] = useState([]);
+  
+  const [customRoute, setCustomRoute] = useState('');
+  const [customDealer, setCustomDealer] = useState('');
+  
+  const fileInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
+
+  const handleAIRewrite = () => {
+    if (!rawNotes.trim()) return;
+    if (!agentName.trim()) {
+      alert('Vui lòng nhập tên nhân viên báo cáo trước khi AI viết lại.');
+      return;
+    }
+    setIsProcessing(true);
+    setAiReport('Hệ thống AI đang xử lý và chuẩn hóa dữ liệu...');
+
+    const finalRoute = route === 'Khác' && customRoute.trim() ? customRoute.trim() : route;
+    const finalDealer = dealer === 'Khác' && customDealer.trim() ? customDealer.trim() : dealer;
+
+    setTimeout(() => {
+      const report = generateAIReport({ agentName, vehicleNumber, route: finalRoute, dealer: finalDealer, rawNotes });
+      setAiReport(report);
+      setIsProcessing(false);
+    }, 1500);
+  };
+
+  const handleSave = () => {
+    if (!agentName.trim()) {
+      alert('Vui lòng nhập tên nhân viên báo cáo.');
+      return;
+    }
+
+    const finalRoute = route === 'Khác' && customRoute.trim() ? customRoute.trim() : route;
+    const finalDealer = dealer === 'Khác' && customDealer.trim() ? customDealer.trim() : dealer;
+
+    const report = {
+      agentName: agentName.trim(),
+      vehicleNumber: vehicleNumber.trim(),
+      route: finalRoute,
+      dealer: finalDealer,
+      title: `BC Thị trường ${finalRoute.split(' - ')[0]} - ${getTodayString()}`,
+      rawNotes,
+      aiReport: aiReport || rawNotes,
+      images: images,
+      status: 'draft',
+      dealersVisited: 1,
+      startTime: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+      endTime: '',
+      duration: '',
+      feedback: null,
+    };
+
+    const savedReport = saveReport(report);
+    setIsSaved(true);
+
+    // Navigate to the newly created report detail page so user knows where it went
+    setTimeout(() => {
+      navigate(`/report/${savedReport.id}`);
+    }, 1000);
+  };
+
+  const handleCopy = () => {
+    if (!aiReport) return;
+    navigator.clipboard.writeText(aiReport);
+    alert('Đã copy nội dung báo cáo!');
+  };
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      // Create local blob URLs for preview
+      const newImages = files.map(file => URL.createObjectURL(file));
+      setImages(prev => [...prev, ...newImages]);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background pb-28">
+      <TopAppBar title="BaoCaoThiTruong" showBack />
+
+      <main className="max-w-screen-xl mx-auto px-4 pt-20 space-y-6 page-enter">
+        {/* Section 1: Nhân viên báo cáo */}
+        <div className="bg-white border border-indigo-100 p-4 rounded-xl space-y-2 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-teal-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+            NHÂN VIÊN BÁO CÁO
+          </label>
+          <div className="relative">
+            <input
+              className="w-full bg-surface-bright border border-outline-variant rounded-lg p-4 text-base focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+              placeholder="Nhập họ và tên nhân viên"
+              type="text"
+              value={agentName}
+              onChange={(e) => setAgentName(e.target.value)}
+            />
+            <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">person</span>
+          </div>
+        </div>
+
+        {/* Section 1b: Số xe đi thị trường */}
+        <div className="bg-white border border-indigo-100 p-4 rounded-xl space-y-2 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-teal-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+            SỐ XE ĐI THỊ TRƯỜNG
+          </label>
+          <div className="relative">
+            <input
+              className="w-full bg-surface-bright border border-outline-variant rounded-lg p-4 text-base focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+              placeholder="VD: 60C - 815.56"
+              type="text"
+              value={vehicleNumber}
+              onChange={(e) => setVehicleNumber(e.target.value)}
+            />
+            <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">directions_car</span>
+          </div>
+        </div>
+
+        {/* Section 2: Tuyến đường + Đại lý */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white border border-indigo-100 p-4 rounded-xl space-y-2 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-teal-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              Tuyến đường / Khu vực
+            </label>
+            <div className="relative">
+              <select
+                className="w-full bg-surface-bright border border-outline-variant rounded-lg p-4 text-base focus:border-primary focus:ring-1 focus:ring-primary appearance-none outline-none"
+                value={route}
+                onChange={(e) => setRoute(e.target.value)}
+              >
+                {ROUTES.map((r) => <option key={r}>{r}</option>)}
+              </select>
+              <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+            </div>
+            {route === 'Khác' && (
+              <div className="mt-2 relative">
+                <input
+                  type="text"
+                  placeholder="Nhập tên tuyến đường khác"
+                  className="w-full bg-surface-bright border border-outline-variant rounded-lg p-4 text-base focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                  value={customRoute}
+                  onChange={(e) => setCustomRoute(e.target.value)}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="bg-white border border-indigo-100 p-4 rounded-xl space-y-2 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-teal-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              Đại lý / Cửa hàng
+            </label>
+            <div className="relative">
+              <select
+                className="w-full bg-surface-bright border border-outline-variant rounded-lg p-4 text-base focus:border-primary focus:ring-1 focus:ring-primary appearance-none outline-none"
+                value={dealer}
+                onChange={(e) => setDealer(e.target.value)}
+              >
+                {DEALERS.map((d) => <option key={d}>{d}</option>)}
+              </select>
+              <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">storefront</span>
+            </div>
+            {dealer === 'Khác' && (
+              <div className="mt-2 relative">
+                <input
+                  type="text"
+                  placeholder="Nhập tên đại lý khác"
+                  className="w-full bg-surface-bright border border-outline-variant rounded-lg p-4 text-base focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                  value={customDealer}
+                  onChange={(e) => setCustomDealer(e.target.value)}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Section 3: Raw Notes */}
+        <div className="bg-white border border-indigo-100 p-4 rounded-xl space-y-2 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-teal-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div className="flex justify-between items-center relative z-10">
+            <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              Nhập ghi chú nhanh
+            </label>
+            <span className="text-xs text-outline italic" style={{ fontFamily: "'JetBrains Mono', monospace" }}>Dữ liệu thô</span>
+          </div>
+          <textarea
+            className="w-full min-h-[140px] bg-surface-bright border border-outline-variant rounded-lg p-4 text-base focus:border-primary focus:ring-1 focus:ring-primary resize-none placeholder:text-outline outline-none relative z-10"
+            placeholder="VD: Sáng ghé đại lý hỏi thăm về mẫu mã mới triển khai của Phương Nam 30x60... Htai theo đại lý thì cty VNM tung ra dòng sp 60x60 giá hợp lý..."
+            value={rawNotes}
+            onChange={(e) => setRawNotes(e.target.value)}
+          />
+        </div>
+
+        {/* Section 4: AI Action Button */}
+        <div className="flex justify-center py-2">
+          <button
+            onClick={handleAIRewrite}
+            disabled={isProcessing || !rawNotes.trim()}
+            className="relative group overflow-hidden bg-primary text-on-primary font-semibold text-sm px-10 py-4 rounded-full flex items-center gap-2 shadow-lg active:scale-95 hover:shadow-xl hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary-container to-tertiary-container opacity-50 group-hover:opacity-80 transition-opacity"></div>
+            <span className="relative z-10 material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+              {isProcessing ? 'hourglass_top' : 'auto_awesome'}
+            </span>
+            <span className="relative z-10">{isProcessing ? 'Đang xử lý...' : 'AI Viết lại báo cáo'}</span>
+          </button>
+        </div>
+
+        {/* Section 5: AI Preview */}
+        <div className="ai-gradient-border p-4 rounded-xl space-y-2 bg-gradient-to-br from-indigo-50 to-purple-50 shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden">
+          {isProcessing && <div className="absolute top-0 left-0 w-full h-1.5 ai-shimmer bg-primary/50"></div>}
+          <div className="flex justify-between items-center">
+            <label className="block text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-2" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              <span className="material-symbols-outlined text-[18px]">auto_fix_high</span>
+              NỘI DUNG BÁO CÁO CHUẨN HÓA
+            </label>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={handleCopy}
+                disabled={!aiReport}
+                className="flex items-center gap-1 text-[11px] font-bold uppercase text-primary bg-primary/10 hover:bg-primary/20 px-2 py-1 rounded transition-colors disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-[14px]">content_copy</span>
+                Copy
+              </button>
+              <span className="bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded text-[10px] font-bold uppercase">Bản thảo AI</span>
+            </div>
+          </div>
+          <textarea
+            className="w-full min-h-[400px] bg-white border-none rounded-lg p-4 text-base focus:ring-0 resize-none leading-relaxed outline-none whitespace-pre-wrap"
+            placeholder="Kết quả chuẩn hóa sẽ hiển thị tại đây..."
+            value={aiReport}
+            onChange={(e) => setAiReport(e.target.value)}
+          />
+          <p className="text-xs text-outline italic">Bạn có thể chỉnh sửa trực tiếp nội dung này trước khi lưu.</p>
+        </div>
+
+        {/* Section 6: Attachments */}
+        <div className="bg-white border border-indigo-100 p-4 rounded-xl space-y-2 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-teal-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <label className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider relative z-10" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+            Ảnh cửa hàng, bảng giá, đối thủ
+          </label>
+          
+          {/* Hidden file inputs */}
+          <input 
+            type="file" 
+            accept="image/*" 
+            capture="environment" 
+            ref={cameraInputRef} 
+            className="hidden" 
+            onChange={handleImageUpload} 
+          />
+          <input 
+            type="file" 
+            accept="image/*" 
+            multiple 
+            ref={fileInputRef} 
+            className="hidden" 
+            onChange={handleImageUpload} 
+          />
+
+          <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
+            <div 
+              onClick={() => cameraInputRef.current?.click()}
+              className="aspect-square border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-surface-container-low transition-colors group"
+            >
+              <span className="material-symbols-outlined text-outline group-hover:text-primary transition-colors">add_a_photo</span>
+              <span className="text-[10px] text-outline mt-1 font-medium">Chụp ảnh</span>
+            </div>
+            <div 
+              onClick={() => fileInputRef.current?.click()}
+              className="aspect-square border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-surface-container-low transition-colors group"
+            >
+              <span className="material-symbols-outlined text-outline group-hover:text-primary transition-colors">upload_file</span>
+              <span className="text-[10px] text-outline mt-1 font-medium">Tải lên</span>
+            </div>
+            
+            {/* Display uploaded images */}
+            {images.map((imgUrl, index) => (
+              <div key={index} className="aspect-square bg-surface-container rounded-xl overflow-hidden relative group">
+                <img src={imgUrl} alt="Upload preview" className="w-full h-full object-cover" />
+                <button 
+                  onClick={() => setImages(images.filter((_, i) => i !== index))}
+                  className="absolute top-1 right-1 bg-error text-on-error rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <span className="material-symbols-outlined text-[14px]">close</span>
+                </button>
+              </div>
+            ))}
+
+            {images.length === 0 && (
+              <div className="aspect-square bg-surface-container rounded-xl flex flex-col items-center justify-center">
+                <span className="material-symbols-outlined text-outline text-3xl">image</span>
+                <span className="text-[10px] text-outline mt-1">0 ảnh</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Section 7: Primary Action */}
+        <div className="pt-2 pb-4">
+          {isSaved ? (
+            <div className="w-full bg-tertiary text-on-tertiary font-semibold text-sm py-4 rounded-xl flex items-center justify-center gap-2 uppercase tracking-widest shadow-md">
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+              Đã lưu thành công! Đang chuyển hướng...
+            </div>
+          ) : (
+            <button
+              onClick={handleSave}
+              className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-sm py-4 rounded-xl shadow-[0_8px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_12px_25px_rgba(16,185,129,0.4)] active:scale-[0.98] hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest transition-all duration-300"
+            >
+              <span className="material-symbols-outlined">save</span>
+              Lưu báo cáo
+            </button>
+          )}
+        </div>
+      </main>
+
+      <BottomNavBar />
+    </div>
+  );
+}
+
+
+--- FILE: src/pages/DashboardPage.jsx ---
+
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import TopAppBar from '../components/TopAppBar';
+import BottomNavBar from '../components/BottomNavBar';
+import { getReports, seedDemoData } from '../lib/storage';
+
+const STATUS_MAP = {
+  approved: { label: 'Đã duyệt', bg: 'bg-tertiary-fixed', text: 'text-on-tertiary-fixed-variant' },
+  completed: { label: 'Hoàn thành', bg: 'bg-tertiary-fixed', text: 'text-on-tertiary-fixed-variant' },
+  in_progress: { label: 'Đang xử lý', bg: 'bg-secondary-container', text: 'text-on-secondary-container' },
+  needs_review: { label: 'Cần duyệt', bg: 'bg-error-container', text: 'text-on-error-container' },
+  draft: { label: 'Bản nháp', bg: 'bg-surface-container-high', text: 'text-on-surface-variant' },
+};
+
+function formatDate(isoString) {
+  try {
+    const date = new Date(isoString);
+    return date.toLocaleDateString('vi-VN', { day: '2-digit', month: 'short', year: 'numeric' });
+  } catch {
+    return '';
+  }
+}
+
+export default function DashboardPage() {
+  const navigate = useNavigate();
+  const [reports, setReports] = useState([]);
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    seedDemoData();
+    setReports(getReports());
+  }, []);
+
+  const filtered = reports.filter(
+    (r) =>
+      r.title?.toLowerCase().includes(search.toLowerCase()) ||
+      r.route?.toLowerCase().includes(search.toLowerCase()) ||
+      r.agentName?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const totalReports = reports.length;
+
+  return (
+    <div className="min-h-screen bg-[#F4F5F7]">
+      <TopAppBar />
+
+      <main className="pt-20 pb-24 px-4 md:px-8 max-w-[1200px] mx-auto page-enter">
+        {/* Search and Filter */}
+        <section className="mb-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="group">
+              <h2 className="text-3xl font-black bg-gradient-to-r from-teal-500 via-indigo-500 to-purple-600 bg-clip-text text-transparent drop-shadow-sm group-hover:scale-[1.02] transition-transform duration-300 transform origin-left">
+                Tổng Quan Thị Trường
+              </h2>
+              <p className="text-sm text-on-surface-variant mt-1">Xem và quản lý các báo cáo thị trường.</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="relative flex-grow md:w-64 group">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm group-hover:text-indigo-500 transition-colors">search</span>
+                <input
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-indigo-100 rounded-xl shadow-sm hover:shadow-md focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 text-sm outline-none transition-all duration-300"
+                  placeholder="Tìm tuyến, đại lý..."
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* AI Summary Card */}
+        <section className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="md:col-span-2 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-5 flex flex-col justify-between relative overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center gap-2">
+                <span className="p-2 bg-primary-fixed rounded-lg text-primary material-symbols-outlined">auto_awesome</span>
+                <span className="text-lg font-semibold">Nhịp Đập Thị Trường</span>
+              </div>
+              <span className="text-xs text-outline" style={{ fontFamily: "'JetBrains Mono', monospace" }}>Cập nhật 2h trước</span>
+            </div>
+            <p className="text-base text-on-surface-variant mb-6">
+              Hoạt động thị trường tại khu vực <span className="font-bold text-on-surface">Bình Dương</span> ghi nhận tăng trưởng 14% sản lượng tiêu thụ tại hệ thống đại lý. Giá cạnh tranh từ đối thủ đang dần ổn định.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => navigate('/create')}
+                className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-container text-white px-4 py-2 rounded-lg font-semibold text-sm shadow-sm hover:opacity-90 active:scale-95"
+              >
+                <span className="group-hover:animate-pulse">✨ Phân Tích Bằng AI</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-emerald-50 to-teal-100 border border-emerald-200 rounded-xl p-4 flex flex-col justify-center items-center text-center shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <span className="text-5xl font-extrabold text-teal-600 mb-1 drop-shadow-sm">{totalReports}</span>
+            <span className="text-xs text-on-surface-variant uppercase tracking-wider" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              Báo cáo tháng này
+            </span>
+            <div className="mt-4 w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+              <div className="bg-primary h-full rounded-full transition-all duration-500" style={{ width: `${Math.min((totalReports / 56) * 100, 100)}%` }}></div>
+            </div>
+            <span className="mt-2 text-sm text-on-surface-variant">{Math.round((totalReports / 56) * 100)}% mục tiêu tháng</span>
+          </div>
+        </section>
+
+        {/* Reports Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((report) => {
+            const status = STATUS_MAP[report.status] || STATUS_MAP.draft;
+            return (
+              <div
+                key={report.id}
+                onClick={() => navigate(`/report/${report.id}`)}
+                className="bg-white border border-indigo-100 rounded-xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group cursor-pointer active:scale-[0.98] relative"
+              >
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-teal-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
+                <div className="h-28 bg-surface-container relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-tertiary-fixed/20 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-primary/20 text-6xl">description</span>
+                  </div>
+                  <div className={`absolute top-3 right-3 ${status.bg} ${status.text} px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider`}>
+                    {status.label}
+                  </div>
+                </div>
+                <div className="p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-xs text-on-surface-variant" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                      {formatDate(report.createdAt)}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-on-surface group-hover:text-primary transition-colors line-clamp-1">
+                    {report.title || report.route}
+                  </h3>
+                  <p className="text-sm text-on-surface-variant mt-1 line-clamp-1">{report.route}</p>
+                  <div className="mt-4 flex items-center justify-between border-t border-outline-variant pt-3">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-primary text-base">person</span>
+                      <span className="text-sm text-on-surface-variant">{report.agentName}</span>
+                    </div>
+                    <span className="material-symbols-outlined text-primary">chevron_right</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Add New Placeholder */}
+          <div
+            onClick={() => navigate('/create')}
+            className="bg-surface border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center p-10 hover:border-primary hover:bg-primary/5 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 cursor-pointer text-center group active:scale-[0.98]"
+          >
+            <span className="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors mb-4" style={{ fontSize: '48px' }}>
+              add_circle
+            </span>
+            <p className="text-lg font-semibold text-on-surface-variant">Tạo Báo Cáo Mới</p>
+            <p className="text-sm text-outline">Nhấn để bắt đầu khảo sát</p>
+          </div>
+        </div>
+      </main>
+
+      <BottomNavBar />
+    </div>
+  );
+}
+
+
+--- FILE: src/pages/LoginPage.jsx ---
+
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+export default function LoginPage() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [focusedField, setFocusedField] = useState(null);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    navigate('/');
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen px-4 relative">
+      {/* Subtle background */}
+      <div className="fixed inset-0 -z-10 bg-surface">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          style={{
+            backgroundImage: 'radial-gradient(circle at 25% 25%, #003d9b 0%, transparent 50%), radial-gradient(circle at 75% 75%, #71dba6 0%, transparent 50%)',
+          }}
+        />
+      </div>
+
+      <main className="w-full max-w-md page-enter">
+        {/* Brand Identity */}
+        <div className="flex flex-col items-center mb-10">
+          <div className="w-16 h-16 bg-primary flex items-center justify-center rounded-xl mb-4 login-card">
+            <span className="material-symbols-outlined text-on-primary text-4xl">analytics</span>
+          </div>
+          <h1 className="text-2xl font-extrabold text-primary tracking-tight" style={{ fontFamily: "'Hanken Grotesk', sans-serif" }}>
+            BaoCaoThiTruong
+          </h1>
+          <p className="text-sm text-on-surface-variant mt-1">Hệ thống phân tích thị trường chuyên sâu</p>
+        </div>
+
+        {/* Login Container */}
+        <section className="bg-surface-container-lowest p-6 md:p-10 rounded-xl border border-outline-variant login-card">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-on-surface mb-1">Đăng nhập</h2>
+            <p className="text-sm text-on-surface-variant">Vui lòng sử dụng tài khoản doanh nghiệp được cấp.</p>
+          </div>
+
+          <form className="space-y-4" onSubmit={handleLogin}>
+            {/* Email Field */}
+            <div className="space-y-1">
+              <label
+                className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider"
+                style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                htmlFor="email"
+              >
+                Email công ty
+              </label>
+              <div className="relative flex items-center">
+                <span className={`material-symbols-outlined absolute left-3 text-xl transition-colors ${focusedField === 'email' ? 'text-primary' : 'text-outline'}`}>
+                  corporate_fare
+                </span>
+                <input
+                  className="w-full pl-11 pr-4 py-3 bg-surface border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-base outline-none"
+                  id="email"
+                  type="email"
+                  placeholder="name@company.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onFocus={() => setFocusedField('email')}
+                  onBlur={() => setFocusedField(null)}
+                />
+              </div>
+            </div>
+
+            {/* Password Field */}
+            <div className="space-y-1">
+              <div className="flex justify-between items-center">
+                <label
+                  className="block text-xs font-medium text-on-surface-variant uppercase tracking-wider"
+                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                  htmlFor="password"
+                >
+                  Mật khẩu
+                </label>
+                <a className="text-xs text-primary hover:underline" style={{ fontFamily: "'JetBrains Mono', monospace" }} href="#">
+                  Quên mật khẩu?
+                </a>
+              </div>
+              <div className="relative flex items-center">
+                <span className={`material-symbols-outlined absolute left-3 text-xl transition-colors ${focusedField === 'password' ? 'text-primary' : 'text-outline'}`}>
+                  lock_open
+                </span>
+                <input
+                  className="w-full pl-11 pr-4 py-3 bg-surface border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-base outline-none"
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onFocus={() => setFocusedField('password')}
+                  onBlur={() => setFocusedField(null)}
+                />
+              </div>
+            </div>
+
+            {/* Remember Me */}
+            <div className="flex items-center space-x-2 pt-1">
+              <input className="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" id="remember" type="checkbox" />
+              <label className="text-sm text-on-surface-variant cursor-pointer" htmlFor="remember">
+                Duy trì đăng nhập trong 30 ngày
+              </label>
+            </div>
+
+            {/* Primary Action */}
+            <div className="pt-4">
+              <button
+                className="w-full bg-primary hover:bg-primary-container text-on-primary font-semibold text-sm py-4 rounded-lg flex items-center justify-center space-x-2 active:scale-95 login-card"
+                type="submit"
+              >
+                <span>Đăng nhập</span>
+                <span className="material-symbols-outlined text-xl">arrow_forward</span>
+              </button>
+            </div>
+          </form>
+
+          {/* Divider */}
+          <div className="flex items-center my-6">
+            <div className="flex-1 border-t border-outline-variant"></div>
+            <span className="px-4 text-xs text-outline" style={{ fontFamily: "'JetBrains Mono', monospace" }}>HOẶC</span>
+            <div className="flex-1 border-t border-outline-variant"></div>
+          </div>
+
+          {/* SSO Option */}
+          <button
+            onClick={handleLogin}
+            className="w-full flex items-center justify-center space-x-3 py-3 border border-outline-variant rounded-lg hover:bg-surface-container-low ai-accent-border"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            <span className="font-semibold text-sm text-on-surface">Đăng nhập với Google Workspace</span>
+          </button>
+        </section>
+
+        {/* Footer */}
+        <footer className="mt-6 text-center">
+          <p className="text-sm text-on-surface-variant">
+            Chưa có tài khoản?{' '}
+            <a className="text-primary font-bold hover:underline" href="#">Liên hệ quản trị viên</a>
+          </p>
+          <div className="mt-10 flex justify-center space-x-4 text-outline">
+            <span className="text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>Bảo mật</span>
+            <span className="text-xs">•</span>
+            <span className="text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>Điều khoản</span>
+            <span className="text-xs">•</span>
+            <span className="text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>Hỗ trợ</span>
+          </div>
+        </footer>
+      </main>
+    </div>
+  );
+}
+
+
+--- FILE: src/pages/ReportDetailPage.jsx ---
+
+import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import TopAppBar from '../components/TopAppBar';
+import BottomNavBar from '../components/BottomNavBar';
+import { getReportById, updateReport } from '../lib/storage';
+
+const STATUS_MAP = {
+  approved: { label: 'Đã phê duyệt', bg: 'bg-tertiary-fixed', text: 'text-on-tertiary-fixed-variant' },
+  completed: { label: 'Hoàn thành', bg: 'bg-tertiary-fixed', text: 'text-on-tertiary-fixed-variant' },
+  in_progress: { label: 'Đang xử lý', bg: 'bg-secondary-container', text: 'text-on-secondary-container' },
+  needs_review: { label: 'Cần duyệt', bg: 'bg-error-container', text: 'text-on-error-container' },
+  draft: { label: 'Bản nháp', bg: 'bg-surface-container-high', text: 'text-on-surface-variant' },
+};
+
+function formatDate(isoString) {
+  try {
+    const date = new Date(isoString);
+    return date.toLocaleDateString('vi-VN', { day: '2-digit', month: 'long', year: 'numeric' });
+  } catch {
+    return '';
+  }
+}
+
+export default function ReportDetailPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [report, setReport] = useState(null);
+  const [feedbackText, setFeedbackText] = useState('');
+
+  useEffect(() => {
+    const data = getReportById(id);
+    if (!data) {
+      navigate('/');
+      return;
+    }
+    setReport(data);
+  }, [id, navigate]);
+
+  if (!report) return null;
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleCopy = () => {
+    const textToCopy = report.aiReport || report.rawNotes;
+    if (!textToCopy) return;
+    navigator.clipboard.writeText(textToCopy);
+    alert('Đã copy nội dung báo cáo!');
+  };
+
+  const handleStatusUpdate = (newStatus) => {
+    const updated = updateReport(report.id, { status: newStatus });
+    if (updated) {
+      setReport(updated);
+      alert(newStatus === 'approved' ? 'Đã phê duyệt báo cáo!' : 'Đã yêu cầu bổ sung thông tin!');
+    }
+  };
+
+  const handleFeedbackSubmit = () => {
+    if (!feedbackText.trim()) return;
+    const newFeedback = {
+      author: 'Quản lý (Bạn)',
+      initials: 'QL',
+      time: 'Vừa xong',
+      message: feedbackText.trim()
+    };
+    const updated = updateReport(report.id, { feedback: newFeedback });
+    if (updated) {
+      setReport(updated);
+      setFeedbackText('');
+      alert('Đã gửi góp ý thành công!');
+    }
+  };
+
+  const status = STATUS_MAP[report.status] || STATUS_MAP.draft;
+
+  return (
+    <div className="min-h-screen bg-[#F4F5F7]">
+      <div className="print:hidden">
+        <TopAppBar
+          title="BaoCaoThiTruong"
+          showBack
+          rightContent={
+            <div className="flex gap-4 items-center">
+              <span className="text-on-surface-variant text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                ID: RPT-{report.id}
+              </span>
+              <div className={`${status.bg} ${status.text} px-3 py-1 rounded-full text-xs font-medium`} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                {status.label}
+              </div>
+            </div>
+          }
+        />
+      </div>
+
+      <main className="mt-20 mb-24 max-w-[1200px] mx-auto px-4 md:px-8 grid grid-cols-1 lg:grid-cols-12 gap-4 page-enter print:mt-0 print:mb-0 print:block">
+        
+        {/* TCVN Print Header (Nghị định 30/CP) */}
+        <div className="hidden print:block mb-8" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
+          <div className="flex justify-between items-start mb-6 text-[13pt] text-black">
+            <div className="text-center w-1/2 flex flex-col items-center">
+              <p className="font-bold">CÔNG TY PHƯƠNG NAM</p>
+              <p className="font-bold">SỐ: {report.id?.substring(0,4) || '01'}/BC-PN</p>
+              <div className="w-1/3 border-t-[1px] border-black mt-1"></div>
+            </div>
+            <div className="text-center w-1/2 flex flex-col items-center">
+              <p className="font-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+              <p className="font-bold">Độc lập - Tự do - Hạnh phúc</p>
+              <div className="w-1/2 border-t-[1.5px] border-black mt-1"></div>
+              <p className="italic mt-2">TP.HCM, ngày ... tháng ... năm 202...</p>
+            </div>
+          </div>
+          <div className="text-center mb-6 text-black">
+            <h1 className="font-bold text-[16pt] mb-2">BÁO CÁO THỊ TRƯỜNG</h1>
+            <p className="font-bold text-[14pt]">V/v: Tuyến {report.route}</p>
+          </div>
+        </div>
+
+        {/* Left Column: Primary Content */}
+        <div className="lg:col-span-8 space-y-6 print:space-y-4">
+          {/* Header Card */}
+          <section className="bg-white border border-outline-variant p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group print:hidden">
+            <div>
+              <h2 className="text-2xl font-semibold text-on-surface">{report.title}</h2>
+              <div className="flex items-center gap-4 mt-2 text-on-surface-variant">
+                <div className="flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[18px]">calendar_today</span>
+                  <span className="text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{formatDate(report.createdAt)}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[18px]">route</span>
+                  <span className="text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>Tuyến: {report.route}</span>
+                </div>
+                {report.vehicleNumber && (
+                  <div className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[18px]">directions_car</span>
+                    <span className="text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>Số xe: {report.vehicleNumber}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <button 
+              onClick={handlePrint}
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg font-semibold text-sm hover:opacity-90 active:scale-95"
+            >
+              <span className="material-symbols-outlined text-[18px]">download</span>
+              Xuất PDF
+            </button>
+          </section>
+
+          {/* AI Finalized Report */}
+          <article className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 p-4 md:p-10 relative overflow-hidden rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 print:bg-none print:border-none print:p-0 print:shadow-none">
+            <div className="absolute top-0 right-0 flex items-center print:hidden">
+              <button 
+                onClick={handleCopy}
+                className="px-4 py-1.5 bg-surface-container-high text-primary text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 hover:bg-surface-dim transition-colors"
+              >
+                <span className="material-symbols-outlined text-[12px]">content_copy</span>
+                Copy
+              </button>
+              <div className="px-4 py-1.5 bg-gradient-to-r from-primary to-primary-container text-white text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 rounded-bl-lg">
+                <span className="material-symbols-outlined text-[12px]" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                AI Optimized
+              </div>
+            </div>
+
+            <div className="space-y-6 pt-4 print:pt-0">
+              <div className="pb-4 print:pb-0">
+                <p className="text-base text-on-surface leading-relaxed whitespace-pre-wrap font-medium print:font-['Times_New_Roman'] print:text-[14pt] print:text-black print:font-normal print:leading-normal print:text-justify">
+                  {report.aiReport || report.rawNotes}
+                </p>
+              </div>
+            </div>
+          </article>
+
+          {/* Feedback Section */}
+          <section className="bg-white border border-outline-variant overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-all duration-300 print:hidden">
+            <div className="bg-surface-container px-4 py-3 flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary">chat_bubble</span>
+              <h3 className="text-lg font-semibold text-on-surface">Góp ý từ quản lý</h3>
+            </div>
+            <div className="p-4 space-y-4">
+              {/* Existing feedback */}
+              {report.feedback && (
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-white font-bold shrink-0 text-sm">
+                    {report.feedback.initials}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold text-sm text-on-surface">{report.feedback.author}</span>
+                      <span className="text-on-surface-variant text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>• {report.feedback.time}</span>
+                    </div>
+                    <div className="bg-surface-container-low p-4 rounded-lg text-base text-on-surface">
+                      {report.feedback.message}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Add Feedback */}
+              <div className="pt-4 border-t border-outline-variant">
+                <div className="flex gap-4 items-start">
+                  <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant shrink-0">
+                    <span className="material-symbols-outlined">person</span>
+                  </div>
+                  <div className="flex-1 space-y-3">
+                    <textarea
+                      className="w-full bg-surface border border-outline-variant rounded-lg p-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none min-h-[80px] text-base"
+                      placeholder="Nhập ý kiến phản hồi hoặc chỉ đạo mới..."
+                      value={feedbackText}
+                      onChange={(e) => setFeedbackText(e.target.value)}
+                    />
+                    <div className="flex justify-end gap-2">
+                      <button 
+                        onClick={() => setFeedbackText('')}
+                        className="px-4 py-2 font-semibold text-sm text-on-surface-variant hover:bg-surface-container rounded-lg"
+                      >
+                        Hủy
+                      </button>
+                      <button 
+                        onClick={handleFeedbackSubmit}
+                        disabled={!feedbackText.trim()}
+                        className="px-6 py-2 bg-primary text-on-primary font-semibold text-sm rounded-lg hover:opacity-90 active:scale-95 disabled:opacity-50"
+                      >
+                        Gửi phản hồi
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        {/* Right Column: Meta */}
+        <aside className="lg:col-span-4 space-y-6 print:hidden">
+          {/* Agent Details */}
+          <section className="bg-white border border-outline-variant p-4 space-y-4 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+            <h4 className="text-xs uppercase font-bold text-on-surface-variant" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              Thông tin nhân sự
+            </h4>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-white font-bold text-lg">
+                {report.agentName?.charAt(0) || 'N'}
+              </div>
+              <div>
+                <div className="font-semibold text-sm text-on-surface">{report.agentName}</div>
+                <div className="text-on-surface-variant text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                  Nhân viên thị trường (Field Agent)
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2 pt-2 border-t border-outline-variant">
+              <div className="flex justify-between text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                <span className="text-on-surface-variant">Thời gian bắt đầu:</span>
+                <span className="text-on-surface">{report.startTime || 'N/A'}</span>
+              </div>
+              <div className="flex justify-between text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                <span className="text-on-surface-variant">Thời gian kết thúc:</span>
+                <span className="text-on-surface">{report.endTime || 'N/A'}</span>
+              </div>
+              <div className="flex justify-between text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                <span className="text-on-surface-variant">Thời lượng:</span>
+                <span className="text-on-surface">{report.duration || 'N/A'}</span>
+              </div>
+            </div>
+          </section>
+
+          {/* Dealer Info */}
+          <section className="bg-white border border-outline-variant p-4 space-y-2 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+            <h4 className="text-xs uppercase font-bold text-on-surface-variant" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              Thông tin đại lý
+            </h4>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary">storefront</span>
+              <span className="text-base font-medium">{report.dealer}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary text-[18px]">route</span>
+              <span className="text-sm text-on-surface-variant">{report.route}</span>
+            </div>
+          </section>
+
+          {/* Quick Actions */}
+          <section className="space-y-2 print:hidden">
+            <button 
+              onClick={() => handleStatusUpdate('needs_review')}
+              className="w-full py-3 border border-primary text-primary font-semibold text-sm rounded-xl hover:bg-surface-container flex items-center justify-center gap-2 active:scale-[0.98]"
+            >
+              <span className="material-symbols-outlined">edit</span>
+              Yêu cầu bổ sung thông tin
+            </button>
+            <button 
+              onClick={() => handleStatusUpdate('approved')}
+              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold text-sm rounded-xl hover:shadow-lg hover:-translate-y-1 flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-all duration-300"
+            >
+              <span className="material-symbols-outlined">check_circle</span>
+              Phê duyệt báo cáo
+            </button>
+          </section>
+        </aside>
+      </main>
+
+      <div className="print:hidden">
+        <BottomNavBar />
+      </div>
+    </div>
+  );
+}
+
+
+--- FILE: src/style.css ---
+
+:root {
+  --text: #6b6375;
+  --text-h: #08060d;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #aa3bff;
+  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-border: rgba(170, 59, 255, 0.5);
+  --social-bg: rgba(244, 243, 236, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light dark;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #9ca3af;
+    --text-h: #f3f4f6;
+    --bg: #16171d;
+    --border: #2e303a;
+    --code-bg: #1f2028;
+    --accent: #c084fc;
+    --accent-bg: rgba(192, 132, 252, 0.15);
+    --accent-border: rgba(192, 132, 252, 0.5);
+    --social-bg: rgba(47, 48, 58, 0.5);
+    --shadow:
+      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+
+  #social .button-icon {
+    filter: invert(1) brightness(2);
+  }
+}
+
+body {
+  margin: 0;
+}
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+h1 {
+  font-size: 56px;
+  letter-spacing: -1.68px;
+  margin: 32px 0;
+  @media (max-width: 1024px) {
+    font-size: 36px;
+    margin: 20px 0;
+  }
+}
+h2 {
+  font-size: 24px;
+  line-height: 118%;
+  letter-spacing: -0.24px;
+  margin: 0 0 8px;
+  @media (max-width: 1024px) {
+    font-size: 20px;
+  }
+}
+p {
+  margin: 0;
+}
+
+code,
+.counter {
+  font-family: var(--mono);
+  display: inline-flex;
+  border-radius: 4px;
+  color: var(--text-h);
+}
+
+code {
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--code-bg);
+}
+
+.counter {
+  font-size: 16px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+  margin-bottom: 24px;
+
+  &:hover {
+    border-color: var(--accent-border);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.hero {
+  position: relative;
+
+  .base,
+  .framework,
+  .vite {
+    inset-inline: 0;
+    margin: 0 auto;
+  }
+
+  .base {
+    width: 170px;
+    position: relative;
+    z-index: 0;
+  }
+
+  .framework,
+  .vite {
+    position: absolute;
+  }
+
+  .framework {
+    z-index: 1;
+    top: 34px;
+    height: 28px;
+    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
+      scale(1.4);
+  }
+
+  .vite {
+    z-index: 0;
+    top: 107px;
+    height: 26px;
+    width: auto;
+    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
+      scale(0.8);
+  }
+}
+
+#app {
+  width: 1126px;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  border-inline: 1px solid var(--border);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+#center {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  place-content: center;
+  place-items: center;
+  flex-grow: 1;
+
+  @media (max-width: 1024px) {
+    padding: 32px 20px 24px;
+    gap: 18px;
+  }
+}
+
+#next-steps {
+  display: flex;
+  border-top: 1px solid var(--border);
+  text-align: left;
+
+  & > div {
+    flex: 1 1 0;
+    padding: 32px;
+    @media (max-width: 1024px) {
+      padding: 24px 20px;
+    }
+  }
+
+  .icon {
+    margin-bottom: 16px;
+    width: 22px;
+    height: 22px;
+  }
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+#docs {
+  border-right: 1px solid var(--border);
+
+  @media (max-width: 1024px) {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+#next-steps ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 8px;
+  margin: 32px 0 0;
+
+  .logo {
+    height: 18px;
+  }
+
+  a {
+    color: var(--text-h);
+    font-size: 16px;
+    border-radius: 6px;
+    background: var(--social-bg);
+    display: flex;
+    padding: 6px 12px;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: box-shadow 0.3s;
+
+    &:hover {
+      box-shadow: var(--shadow);
+    }
+    .button-icon {
+      height: 18px;
+      width: 18px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    margin-top: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    li {
+      flex: 1 1 calc(50% - 8px);
+    }
+
+    a {
+      width: 100%;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+  }
+}
+
+#spacer {
+  height: 88px;
+  border-top: 1px solid var(--border);
+  @media (max-width: 1024px) {
+    height: 48px;
+  }
+}
+
+.ticks {
+  position: relative;
+  width: 100%;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: -4.5px;
+    border: 5px solid transparent;
+  }
+
+  &::before {
+    left: 0;
+    border-left-color: var(--border);
+  }
+  &::after {
+    right: 0;
+    border-right-color: var(--border);
+  }
+}
+
+
+--- FILE: vite.config.js ---
+
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+})
